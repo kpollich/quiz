@@ -25,7 +25,7 @@ class QuestionListContainer extends Component {
       return (
         <div className="quiz-notes">
           You have reached the maximum number of submissions for this quiz, and
-          further submissions will not be accepted. You score was {this.state.numberCorrect}/10.
+          further submissions will not be accepted. Your final score was <strong>{this.state.numberCorrect}/10</strong>.
         </div>
       )
     }
@@ -69,17 +69,13 @@ class QuestionListContainer extends Component {
   onSubmit = (event) => {
     event.preventDefault()
     
-    const submissions = this.state.submissions + 1
-    
-    if (submissions === NUM_SUBMISSIONS_ALLOWED) {
-      this.setState({ submissions, maxSubmissionsReached: true })
-      return
-    }
-    
     const questions = gradeQuestions(this.state.questions)
     const numberCorrect = questions.filter((question) => question.isCorrect).length
     
-    this.setState({ questions , submissions, numberCorrect })
+    const submissions = this.state.submissions + 1
+    const maxSubmissionsReached = submissions === NUM_SUBMISSIONS_ALLOWED
+    
+    this.setState({ questions , submissions, numberCorrect, maxSubmissionsReached })
     
     // Jump back to the top and show score, notes, etc
     window.scrollTo(0, 0)
