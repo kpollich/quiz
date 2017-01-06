@@ -1,0 +1,12 @@
+.correct {
+  background-color: #83cf91;
+}
+
+.incorrect {
+  background-color: #f0abab;
+}
+
+.question {
+  padding: .5em;
+  margin: .5em;
+}

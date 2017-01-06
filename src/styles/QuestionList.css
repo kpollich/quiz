@@ -1,0 +1,23 @@
+.quiz-notes {
+  text-align: center;
+  margin: 1.5em auto;
+}
+
+.question-list-container {
+  width: 70%;
+  margin: auto;
+}
+
+.submit {
+  -webkit-appearance: button;
+  height: 3em;
+  margin: 2em auto;
+  font-size: 1.3em;
+  padding: .5em;
+  display: block;
+}
+
+.submit:hover {
+  background-color: #99aab8;
+  transition: background-color .3s ease;
+}

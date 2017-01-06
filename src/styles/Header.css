@@ -1,0 +1,10 @@
+.header {
+  background-color: #495e70;
+  text-align: center;
+  width: 100%;
+}
+
+.title {
+  color: #ebebeb;
+  display: inline-block;
+}
