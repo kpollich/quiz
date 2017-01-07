@@ -1,5 +1,6 @@
 import Choice from '../components/Choice'
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import '../styles/Question.css'
 
@@ -18,7 +19,7 @@ class QuestionContainer extends Component {
         letter={key} 
         text={choices[key]} 
         key={key}
-        id={`question-${this.props.id}-choice-${key}`}
+        id={`question-${this.props.question.id}-choice-${key}`}
         onChange={this.selectChoice}
         checked={this.state.selectedChoice === key}
       />
@@ -34,7 +35,7 @@ class QuestionContainer extends Component {
     
     return (
       <div className={className}>
-        <h3>{this.props.id + 1}. {text}</h3>
+        <h3>{this.props.index + 1}. {text}</h3>
         <div className="question-choices">
           {choiceNodes}
         </div>
@@ -45,7 +46,7 @@ class QuestionContainer extends Component {
   selectChoice = (event) => {
     const answer = event.target.value
     this.setState({ selectedChoice: answer })
-    this.props.selectAnswer(answer, this.props.id)
+    this.props.selectAnswer(this.props.question.id, answer)
   } 
 }
 
@@ -65,4 +66,4 @@ function getChoices(question) {
   }, {})
 }
 
-export default QuestionContainer
+export default connect()(QuestionContainer)
