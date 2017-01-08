@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import Notes from '../components/Notes'
 import QuestionContainer from '../containers/QuestionContainer'
 import questions from '../data/questions'
 import React, { Component } from 'react'
@@ -6,12 +7,12 @@ import { shuffle, take } from 'lodash'
 
 import { gradeQuestions, receiveQuestions, receiveSubmission } from '../actions'
 
-import '../styles/QuestionList.css'
+import '../styles/Quiz.css'
 
 const NUM_QUESTIONS = 10
 const NUM_SUBMISSIONS_ALLOWED = 2
 
-class QuestionListContainer extends Component {
+class QuizContainer extends Component {
   constructor (props) {
     super(props)
 
@@ -27,9 +28,6 @@ class QuestionListContainer extends Component {
 
     const numberCorrect = questions.filter((question) => question.isCorrect).length
     const maxSubmissionsReached = (submissions === NUM_SUBMISSIONS_ALLOWED)
-
-    // Display remaining submissions, score, etc
-    const notes = getNotes(submissions, numberCorrect, maxSubmissionsReached)
 
     const questionContainerNodes = questions.map((question, index) => {
       return <QuestionContainer
@@ -48,9 +46,9 @@ class QuestionListContainer extends Component {
 
     return (
       <div className="quiz-container">
-        {notes}
+        <Notes {...{ submissions, maxSubmissionsReached, numberCorrect, numSubmissionsAllowed: NUM_SUBMISSIONS_ALLOWED }} />
 
-        <form className="question-list-container" onSubmit={this.onSubmit}>
+        <form className="quiz-form" onSubmit={this.onSubmit}>
           {questionContainerNodes}
           {submitButton}
         </form>
@@ -59,9 +57,9 @@ class QuestionListContainer extends Component {
   }
 
   onSubmit = (event) => {
-    const { dispatch, questions, submissions } = this.props
     event.preventDefault()
-
+    const { dispatch, questions, submissions } = this.props
+    
     const gradedQuestions = getGradedQuestions(questions)
     const newSubmissions = submissions + 1
 
@@ -83,6 +81,22 @@ function getQuestionSet () {
     .filter((q) => !q.justification)
     .map((question, index) => {
       question.id = index
+
+      // Questions in the data set have properties like "choice_a", "choice_b", etc. Reduce
+      // those properties into an object instead to make them a bit easier to access.
+      question.choices = Object.keys(question).reduce((result, key) => {
+        const matchInfo = key.match(/^choice_([a-z])$/)
+
+        if (!matchInfo) {
+          return result
+        }
+
+        const choiceLetter = matchInfo[1]
+        result[choiceLetter] = question[key]
+
+        return result
+      }, {})
+
       return question
     })
 
@@ -102,43 +116,6 @@ function getGradedQuestions (questions) {
   return questions
 }
 
-function getNotes(submissions, numberCorrect, maxSubmissionsReached) {
-  let notes = ''
-
-  if (submissions === 0) {
-    notes = (
-      <div className="quiz-notes">
-        <p>The quiz below is made up of 10 multiple choice questions. You may answer
-        the questions in any order you'd like. Press the "Submit Answers" button at
-        the bottom of the quiz when you are finished to receive your grade.</p>
-
-        <p>Note: You are allowed up to {NUM_SUBMISSIONS_ALLOWED} submissions.
-        You have submitted {submissions} time(s) so far.</p>
-      </div>
-    )
-  } else if (maxSubmissionsReached) {
-     notes = (
-      <div className="quiz-notes">
-        You have reached the maximum number of submissions for this quiz, and
-        further submissions will not be accepted. Your final score
-        was <strong>{numberCorrect}/10</strong>.
-      </div>
-    )
-  } else {
-    notes = (
-      <div className="quiz-notes">
-        <p>Your score was {numberCorrect}/10. Questions answered correctly are marked
-        in green below, and incorrect questions are marked in red.</p>
-
-        <p>Note: You are allowed up to {NUM_SUBMISSIONS_ALLOWED} submissions.
-        You have submitted {submissions} time(s) so far.</p>
-      </div>
-    )
-  }
-
-  return notes
-}
-
 function mapStateToProps (state) {
   return {
     questions: state.questions,
@@ -146,4 +123,4 @@ function mapStateToProps (state) {
   }
 }
 
-export default connect(mapStateToProps)(QuestionListContainer)
+export default connect(mapStateToProps)(QuizContainer)
