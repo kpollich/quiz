@@ -1,0 +1,11 @@
+.choice, .choice-label {
+  padding: .3em;
+}
+
+.choice-label {
+  transition: background-color .3s;
+}
+
+.choice-label:hover {
+  background-color: #dadada;
+}

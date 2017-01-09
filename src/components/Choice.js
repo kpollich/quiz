@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 
+import '../styles/Choice.css'
+
 class Choice extends Component {
   render () {
     return (
@@ -12,7 +14,7 @@ class Choice extends Component {
           id={this.props.id}
         />
         
-        <label htmlFor={this.props.id}>{this.props.letter} - {this.props.text}</label>
+        <label className="choice-label" htmlFor={this.props.id}>{this.props.letter} - {this.props.text}</label>
       </div>
     )
   }

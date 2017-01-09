@@ -18,7 +18,7 @@ class QuizContainer extends Component {
 
     const { dispatch } = this.props
 
-    // Get the base set of questions and put them in our state
+    // Get the base set of questions and put them in our store
     const questions = getQuestionSet()
     dispatch(receiveQuestions(questions))
   }
@@ -37,12 +37,7 @@ class QuizContainer extends Component {
       />
     })
 
-    let submitButton = ''
-
-    // Don't allow submissions when the maximum number of submissions has been reached
-    if (!maxSubmissionsReached) {
-      submitButton = <input type="submit" className="submit" value="Submit Answers" />
-    }
+    let submitButton = maxSubmissionsReached ? '' : <input type="submit" className="submit" value="Submit Answers" />
 
     return (
       <div className="quiz-container">
@@ -76,7 +71,7 @@ class QuizContainer extends Component {
 function getQuestionSet () {
   // Some questions have a 'justification' property, and the questions don't make much
   // sense. Without clarification, just filter these out for now. Also, add an `id`
-  // property to each questions to make state updates easier.
+  // property to each question to make state updates easier.
   const massagedQuestions = questions
     .filter((q) => !q.justification)
     .map((question, index) => {
