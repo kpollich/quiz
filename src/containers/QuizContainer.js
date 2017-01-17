@@ -1,15 +1,13 @@
 import { connect } from 'react-redux'
 import Notes from '../components/Notes'
 import QuestionContainer from '../containers/QuestionContainer'
-import questions from '../data/questions'
 import React, { Component } from 'react'
-import { shuffle, take } from 'lodash'
+import * as utils from '../utils'
 
 import { gradeQuestions, receiveQuestions, receiveSubmission } from '../actions'
 
 import '../styles/Quiz.css'
 
-const NUM_QUESTIONS = 10
 const NUM_SUBMISSIONS_ALLOWED = 2
 
 class QuizContainer extends Component {
@@ -19,7 +17,7 @@ class QuizContainer extends Component {
     const { dispatch } = this.props
 
     // Get the base set of questions and put them in our store
-    const questions = getQuestionSet()
+    const questions = utils.getQuestionSet()
     dispatch(receiveQuestions(questions))
   }
 
@@ -55,7 +53,7 @@ class QuizContainer extends Component {
     event.preventDefault()
     const { dispatch, questions, submissions } = this.props
     
-    const gradedQuestions = getGradedQuestions(questions)
+    const gradedQuestions = utils.getGradedQuestions(questions)
     const newSubmissions = submissions + 1
 
     // Update state with graded questions and the new number of submissions received
@@ -65,50 +63,6 @@ class QuizContainer extends Component {
     // Jump back to the top and show score, notes, etc
     window.scrollTo(0, 0)
   }
-}
-
-// Get a random set of N questions from the data set
-function getQuestionSet () {
-  // Some questions have a 'justification' property, and the questions don't make much
-  // sense. Without clarification, just filter these out for now. Also, add an `id`
-  // property to each question to make state updates easier.
-  const massagedQuestions = questions
-    .filter((q) => !q.justification)
-    .map((question, index) => {
-      question.id = index
-
-      // Questions in the data set have properties like "choice_a", "choice_b", etc. Reduce
-      // those properties into an object instead to make them a bit easier to access.
-      question.choices = Object.keys(question).reduce((result, key) => {
-        const matchInfo = key.match(/^choice_([a-z])$/)
-
-        if (!matchInfo) {
-          return result
-        }
-
-        const choiceLetter = matchInfo[1]
-        result[choiceLetter] = question[key]
-
-        return result
-      }, {})
-
-      return question
-    })
-
-  return take(shuffle(massagedQuestions), NUM_QUESTIONS)
-}
-
-function getGradedQuestions (questions) {
-  questions.forEach((question) => {
-    if (!question.providedAnswer) {
-      question.isCorrect = false
-      return
-    }
-
-    question.isCorrect = question.answer.toLowerCase() === question.providedAnswer.toLowerCase()
-  })
-
-  return questions
 }
 
 function mapStateToProps (state) {
